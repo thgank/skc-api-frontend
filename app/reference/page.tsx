@@ -89,7 +89,7 @@ export default function ReferencePage() {
           <Col xs={12} sm={8}>
             <Card>
               <Statistic
-                title="Номенклатура (ТРУ)"
+                title="Номенклатура"
                 value={nomenclatures.length}
                 prefix={<AppstoreOutlined />}
                 styles={{ content: { color: '#1677ff' } }}
@@ -110,7 +110,7 @@ export default function ReferencePage() {
 
         {/* ── Номенклатура ── */}
         <Card
-          title={<><AppstoreOutlined style={{ marginRight: 8 }} />Номенклатура (ТРУ)</>}
+          title={<><AppstoreOutlined style={{ marginRight: 8 }} />Номенклатура</>}
           style={{ marginBottom: 24 }}
         >
           <Table

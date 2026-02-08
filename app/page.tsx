@@ -85,7 +85,7 @@ export default function DashboardPage() {
     <Spin spinning={loading}>
       <div style={{ maxWidth: 1100 }}>
         <Title level={2} style={{ marginBottom: 4 }}>
-          Шоукейс — Заявки на закупку ТРУ
+          Шоукейс — Управление  позициями в закупочной системе
         </Title>
         <Paragraph type="secondary" style={{ fontSize: 16, marginBottom: 24 }}>
           Frontend-витрина для демонстрации бэкенд-тестового задания (Java / Spring Boot API)
