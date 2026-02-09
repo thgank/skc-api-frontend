@@ -14,25 +14,52 @@ import type {
 } from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://skc-api-production.up.railway.app/api/v1';
+const AUTH_STORAGE_KEY = 'skc_basic_auth';
 
-function getAuthHeader(): string {
-  if (typeof window === 'undefined') return '';
-  return 'Basic ' + btoa('admin:admin');
+export interface AuthUser {
+  username: string;
+  roles: string[];
+}
+
+export function buildBasicToken(username: string, password: string): string {
+  return 'Basic ' + btoa(`${username}:${password}`);
+}
+
+export function getStoredAuthToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem(AUTH_STORAGE_KEY);
+}
+
+export function setStoredAuthToken(token: string): void {
+  if (typeof window === 'undefined') return;
+  sessionStorage.setItem(AUTH_STORAGE_KEY, token);
+}
+
+export function clearStoredAuthToken(): void {
+  if (typeof window === 'undefined') return;
+  sessionStorage.removeItem(AUTH_STORAGE_KEY);
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_URL}${path}`;
+  const authToken = getStoredAuthToken();
 
   const response = await fetch(url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: getAuthHeader(),
+      ...(authToken ? { Authorization: authToken } : {}),
       ...(options.headers as Record<string, string>),
     },
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      clearStoredAuthToken();
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
     let error: ApiError;
     try {
       error = await response.json();
@@ -54,6 +81,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 /* ── Public API ── */
 
 export const api = {
+  getCurrentUser: () => request<AuthUser>('/auth/me'),
+
   // Requisitions
   getRequisitions: () => request<Requisition[]>('/requisitions'),
 
